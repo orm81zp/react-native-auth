@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
 import firebase from 'firebase';
-import { Header } from './components/common';
+import { Button, Header, Spinner } from './components/common';
 import LoginForm from './components/LoginForm';
 
 import {
@@ -15,7 +15,7 @@ import {
 } from 'react-native-dotenv';
 
 class App extends Component {
-  state = { loggedIn: false };
+  state = { loggedIn: null };
 
   componentDidMount() {
     firebase.initializeApp({
@@ -37,11 +37,26 @@ class App extends Component {
     });
   }
 
+  renderContent = () => {
+    switch (this.state.loggedIn) {
+      case true:
+        return (
+          <Button onPress={() => firebase.auth().signOut()}>
+            Log Out
+          </Button>
+        );
+      case false:
+        return <LoginForm />;
+      default:
+        return <Spinner size="large" />;
+    }
+  };
+
   render() {
     return (
-      <View style={{ flex: 1 }}>
+      <View>
         <Header headerText="Authentication" />
-        <LoginForm />
+        {this.renderContent()}
       </View>
     );
   }
